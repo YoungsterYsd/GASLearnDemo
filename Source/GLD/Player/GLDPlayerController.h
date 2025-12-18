@@ -9,11 +9,14 @@
 class UInputMappingContext;
 class UUserWidget;
 
+class UGLDAbilitySystemComponent;
+class AGLDPlayerState;
+class AGLDHUD;
 /**
  *  Basic PlayerController class for a third person game
  *  Manages input mappings
  */
-UCLASS(abstract)
+UCLASS()
 class AGLDPlayerController : public APlayerController
 {
 	GENERATED_BODY()
@@ -48,5 +51,15 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+public:
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+
+	UFUNCTION(BlueprintCallable, Category = "GLDRPG|PlayerController")
+	AGLDPlayerState* GetGLDPlayerState() const;
+	UFUNCTION(BlueprintCallable, Category = "GLDRPG|PlayerController")
+	UGLDAbilitySystemComponent* GetGLDAbilitySystemComponent() const;
+	UFUNCTION(BlueprintCallable, Category = "GLDRPG|PlayerController")
+	AGLDHUD* GetGLDHUD() const;
 
 };

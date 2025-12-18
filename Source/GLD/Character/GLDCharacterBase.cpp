@@ -1,13 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/GLDCharacterBase.h"
+#include "GLDCharacterBase.h"
+#include "GLDPlayerController.h"
+#include "GLDPlayerState.h"
+#include "GLDGameplayAbility.h"
+#include "AbilitySystem/GLDAbilitySystemComponent.h"
 
 // Sets default values
 AGLDCharacterBase::AGLDCharacterBase(const FObjectInitializer& objInitor) :Super(objInitor)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+
+
+	AbilitySystemComp = CreateDefaultSubobject<UGLDAbilitySystemComponent>(TEXT("AbilitySystemComp"));
+	AbilitySystemComp->SetIsReplicated(true);
+	AbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	SetNetUpdateFrequency(100.f);
 
 }
 
@@ -15,7 +26,30 @@ AGLDCharacterBase::AGLDCharacterBase(const FObjectInitializer& objInitor) :Super
 void AGLDCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if(AbilitySystemComp && GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		AbilitySystemComp->InitAbilityActorInfo(this, this);
+	}
+
+	//临时注册能力 AbilitiesToAdd;
+	for (const auto& AbilityPair : AbilitiesToAdd)
+	{
+		if (UGLDGameplayAbility* AbilityCDO = AbilityPair.Value->GetDefaultObject<UGLDGameplayAbility>())
+		{
+			FGameplayAbilitySpec AbilitySpec(AbilityCDO, 1);
+			AbilitySpec.SourceObject = this;
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityPair.Key);
+			//向gas系统注册技能拿到handle
+			const FGameplayAbilitySpecHandle AbilitySpecHandle =  AbilitySystemComp->GiveAbility(AbilitySpec);
+			AbilitiesToActive.Add(AbilityPair.Key, AbilitySpecHandle);
+		}
+	}
+
+}
+
+void AGLDCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -30,5 +64,60 @@ void AGLDCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+UGLDAbilitySystemComponent* AGLDCharacterBase::GetGLDAbilitySystemComponent() const
+{
+	return AbilitySystemComp;
+}
+
+UAbilitySystemComponent* AGLDCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComp; 
+}
+
+AGLDPlayerController* AGLDCharacterBase::GetGLDPlayerController() const
+{
+	return CastChecked<AGLDPlayerController>(Controller,ECastCheckedType::NullAllowed); 
+}
+
+AGLDPlayerState* AGLDCharacterBase::GetGLDPlayerState() const
+{
+	return CastChecked<AGLDPlayerState>(GetPlayerState(), ECastCheckedType::NullAllowed);
+}
+
+void AGLDCharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	if(const UGLDAbilitySystemComponent* ASC = GetGLDAbilitySystemComponent())
+	{
+		ASC->GetOwnedGameplayTags(TagContainer);
+	}
+}
+
+bool AGLDCharacterBase::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	if(const UGLDAbilitySystemComponent* ASC = GetGLDAbilitySystemComponent())
+	{
+		return ASC->HasMatchingGameplayTag(TagToCheck);
+	}
+	return false;
+}
+
+bool AGLDCharacterBase::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	if(const UGLDAbilitySystemComponent* ASC = GetGLDAbilitySystemComponent())
+	{
+		return ASC->HasAllMatchingGameplayTags(TagContainer);
+	}
+	return false;
+}
+
+bool AGLDCharacterBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	if(const UGLDAbilitySystemComponent* ASC = GetGLDAbilitySystemComponent())
+	{
+		return ASC->HasAnyMatchingGameplayTags(TagContainer);
+	}
+	return false;
 }
 

@@ -2,7 +2,7 @@
 
 #include "GLDLogChannels.h"
 
-namespace GLDGameplayTags
+namespace GLDGameplayTag
 {
 
 

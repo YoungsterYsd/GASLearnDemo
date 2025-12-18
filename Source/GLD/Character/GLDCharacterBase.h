@@ -4,10 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
+#include "GameplayAbilitySpecHandle.h"
+
+#include "AbilitySystemInterface.h"
+#include "GameplayTagAssetInterface.h"
+#include "GameplayCueInterface.h"
+#include "GLDPlayerController.h"
 #include "GLDCharacterBase.generated.h"
 
+class UGLDAbilitySystemComponent;
+class AGLDPlayerController;
+class AGLDPlayerState;
+class UGLDGameplayAbility;
+
 UCLASS()
-class GLD_API AGLDCharacterBase : public ACharacter
+class GLD_API AGLDCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface,public IGameplayCueInterface
 {
 	GENERATED_BODY()
 
@@ -18,6 +30,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -25,5 +38,33 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
+	TObjectPtr<UGLDAbilitySystemComponent> AbilitySystemComp;
+
+	UPROPERTY(BlueprintReadWrite, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, TSubclassOf<UGLDGameplayAbility>> AbilitiesToAdd;
+	TMap<FGameplayTag, FGameplayAbilitySpecHandle> AbilitiesToActive;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
+	UGLDAbilitySystemComponent* GetGLDAbilitySystemComponent() const;
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	AGLDPlayerController* GetGLDPlayerController() const;
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
+	AGLDPlayerState* GetGLDPlayerState() const;
+
+public:
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	UFUNCTION(BlueprintCallable, Category = GameplayTags)
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	UFUNCTION(BlueprintCallable, Category = GameplayTags)
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	UFUNCTION(BlueprintCallable, Category = GameplayTags)
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 
 };

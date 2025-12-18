@@ -9,6 +9,9 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "GLDGameplayTag.h"
+#include "GLDAbilitySystemComponent.h"
 #include "InputActionValue.h"
 #include "GLD.h"
 
@@ -56,8 +59,8 @@ void AGLDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AGLDCharacter::ActivateJump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGLDCharacter::DeactivateJump);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGLDCharacter::Move);
@@ -88,6 +91,18 @@ void AGLDCharacter::Look(const FInputActionValue& Value)
 
 	// route the input
 	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AGLDCharacter::ActivateJump()
+{
+	FGameplayTag JumpTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Jump"),true);
+	AbilitySystemComp->AbilityInputPressed(JumpTag);
+}
+
+void AGLDCharacter::DeactivateJump()
+{
+	FGameplayTag JumpTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Jump"), true);
+	AbilitySystemComp->AbilityInputReleased(JumpTag);
 }
 
 void AGLDCharacter::DoMove(float Right, float Forward)

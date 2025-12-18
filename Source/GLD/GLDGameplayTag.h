@@ -2,7 +2,7 @@
 
 #include "NativeGameplayTags.h"
 
-namespace FDGameplayTags
+namespace GLDGameplayTag
 {
 
 	GLD_API	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString = false);
