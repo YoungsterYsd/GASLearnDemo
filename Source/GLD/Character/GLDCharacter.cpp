@@ -96,13 +96,13 @@ void AGLDCharacter::Look(const FInputActionValue& Value)
 void AGLDCharacter::ActivateJump()
 {
 	FGameplayTag JumpTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Jump"),true);
-	AbilitySystemComp->AbilityInputPressed(JumpTag);
+	AbilitySystemComp->AbilityInputTagPressed(JumpTag);
 }
-
+ 
 void AGLDCharacter::DeactivateJump()
 {
 	FGameplayTag JumpTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Jump"), true);
-	AbilitySystemComp->AbilityInputReleased(JumpTag);
+	AbilitySystemComp->AbilityInputTagReleased(JumpTag);
 }
 
 void AGLDCharacter::DoMove(float Right, float Forward)

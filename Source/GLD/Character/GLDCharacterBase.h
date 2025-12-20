@@ -45,7 +45,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
 	TObjectPtr<UGLDAbilitySystemComponent> AbilitySystemComp;
 
-	UPROPERTY(BlueprintReadWrite, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, TSubclassOf<UGLDGameplayAbility>> AbilitiesToAdd;
 	TMap<FGameplayTag, FGameplayAbilitySpecHandle> AbilitiesToActive;
 

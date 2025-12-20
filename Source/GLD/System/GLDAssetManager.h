@@ -13,5 +13,6 @@ UCLASS()
 class GLD_API UGLDAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
-	
+public :
+	void StartInitialLoading() override;
 };

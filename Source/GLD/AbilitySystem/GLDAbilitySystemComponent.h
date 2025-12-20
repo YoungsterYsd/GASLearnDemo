@@ -16,8 +16,8 @@ class GLD_API UGLDAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UGLDAbilitySystemComponent(const FObjectInitializer& objInitor = FObjectInitializer::Get());
 	
-	void AbilityInputPressed(const FGameplayTag&  InputTag);
-	void AbilityInputReleased(const FGameplayTag& InputTag);
+	void AbilityInputTagPressed(const FGameplayTag&  InputTag);
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused) ;
 	void ClearAbilityInput();
 	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
