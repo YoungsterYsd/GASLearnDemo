@@ -50,10 +50,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	/** Mouse Look Input Action */
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MeleeAttackAction;
+
 public:
 
 	/** Constructor */
 	AGLDCharacter(const FObjectInitializer& objInitor = FObjectInitializer::Get());
+	virtual void BeginPlay() override;
 
 protected:
 
@@ -69,6 +74,9 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void ActivateJump();
 	void DeactivateJump();
+	void ActiveMeleeAttack();
+public:
+	void ComboMeleeAttack();
 
 public:
 

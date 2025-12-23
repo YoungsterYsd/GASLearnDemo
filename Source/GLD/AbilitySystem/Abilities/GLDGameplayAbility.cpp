@@ -18,7 +18,7 @@ UGLDGameplayAbility::UGLDGameplayAbility(const FObjectInitializer& ObjInitor) :S
 
 UGLDAbilitySystemComponent* UGLDGameplayAbility::GetGLDOwningAbilitySystemComponentFromActorInfo() const
 {
-	if (CurrentActorInfo? Cast<UGLDAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent): nullptr)
+	if (CurrentActorInfo? Cast<UGLDAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()): nullptr)
 	{
 		return Cast<UGLDAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent);
 	}
@@ -28,12 +28,12 @@ UGLDAbilitySystemComponent* UGLDGameplayAbility::GetGLDOwningAbilitySystemCompon
 
 AGLDCharacterBase* UGLDGameplayAbility::GetGLDOwningCharacterFromActorInfo() const
 {
-	return CurrentActorInfo ? Cast<AGLDCharacterBase>(CurrentActorInfo->AvatarActor) : nullptr;
+	return CurrentActorInfo ? Cast<AGLDCharacterBase>(CurrentActorInfo->AvatarActor.Get()) : nullptr;
 }
 
 AGLDPlayerController* UGLDGameplayAbility::GetGLDOwningPlayerControllerFromActorInfo() const
 {
-	return CurrentActorInfo ? Cast<AGLDPlayerController>(CurrentActorInfo->PlayerController) : nullptr;
+	return CurrentActorInfo ? Cast<AGLDPlayerController>(CurrentActorInfo->PlayerController.Get()) : nullptr;
 }
 
 AController* UGLDGameplayAbility::GetGLDOwningControllerFromActorInfo() const

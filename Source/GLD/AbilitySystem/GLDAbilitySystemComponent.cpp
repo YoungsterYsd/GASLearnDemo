@@ -4,8 +4,11 @@
 #include "AbilitySystem/GLDAbilitySystemComponent.h"
 #include "GameplayAbilitySpecHandle.h"
 #include "GLDGameplayAbility.h"
-UGLDAbilitySystemComponent::UGLDAbilitySystemComponent(const FObjectInitializer& objInitor)
+UGLDAbilitySystemComponent::UGLDAbilitySystemComponent(const FObjectInitializer& objInitor):Super(objInitor)
 {
+	InputPressedSpecHandles.Reset();
+	InputReleasedSpecHandles.Reset();
+	InputHeldSpecHandles.Reset();
 }
 
 void UGLDAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)

@@ -14,9 +14,11 @@
 #include "GLDCharacterBase.generated.h"
 
 class UGLDAbilitySystemComponent;
+class UGLDComboComponent;
 class AGLDPlayerController;
 class AGLDPlayerState;
 class UGLDGameplayAbility;
+class UGLDAttributeSetCharacter;
 
 UCLASS()
 class GLD_API AGLDCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface,public IGameplayCueInterface
@@ -44,10 +46,14 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
 	TObjectPtr<UGLDAbilitySystemComponent> AbilitySystemComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
+	TObjectPtr<UGLDComboComponent> ComboComp;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, TSubclassOf<UGLDGameplayAbility>> AbilitiesToAdd;
 	TMap<FGameplayTag, FGameplayAbilitySpecHandle> AbilitiesToActive;
+
+	TObjectPtr<UGLDAttributeSetCharacter> AttributeSet;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
@@ -57,6 +63,8 @@ public:
 	AGLDPlayerController* GetGLDPlayerController() const;
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	AGLDPlayerState* GetGLDPlayerState() const;
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
+	UGLDComboComponent* GetGLDComboComponent() const;
 
 public:
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;

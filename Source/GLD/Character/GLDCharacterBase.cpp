@@ -5,6 +5,8 @@
 #include "GLDPlayerController.h"
 #include "GLDPlayerState.h"
 #include "GLDGameplayAbility.h"
+#include "GLDComboComponent.h"
+#include "GLDAttributeSetCharacter.h"
 #include "AbilitySystem/GLDAbilitySystemComponent.h"
 
 // Sets default values
@@ -19,6 +21,10 @@ AGLDCharacterBase::AGLDCharacterBase(const FObjectInitializer& objInitor) :Super
 	AbilitySystemComp->SetIsReplicated(true);
 	AbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	SetNetUpdateFrequency(100.f);
+
+	ComboComp = CreateDefaultSubobject<UGLDComboComponent>(TEXT("ComboComp"));
+	ComboComp->SetIsReplicated(false);
+	AttributeSet = CreateDefaultSubobject<UGLDAttributeSetCharacter>(TEXT("CharacterAttributeSet"));
 
 }
 
@@ -84,6 +90,11 @@ AGLDPlayerController* AGLDCharacterBase::GetGLDPlayerController() const
 AGLDPlayerState* AGLDCharacterBase::GetGLDPlayerState() const
 {
 	return CastChecked<AGLDPlayerState>(GetPlayerState(), ECastCheckedType::NullAllowed);
+}
+
+UGLDComboComponent* AGLDCharacterBase::GetGLDComboComponent() const
+{
+	return ComboComp;
 }
 
 void AGLDCharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

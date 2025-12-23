@@ -9,7 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+#include "GLDComboComponent.h"
 #include "GLDGameplayTag.h"
 #include "GLDAbilitySystemComponent.h"
 #include "InputActionValue.h"
@@ -53,6 +53,11 @@ AGLDCharacter::AGLDCharacter(const FObjectInitializer& objInitor) :Super(objInit
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AGLDCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void AGLDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -68,6 +73,10 @@ void AGLDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGLDCharacter::Look);
+
+		//Attack
+		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &AGLDCharacter::ActiveMeleeAttack);
+
 	}
 	else
 	{
@@ -103,6 +112,23 @@ void AGLDCharacter::DeactivateJump()
 {
 	FGameplayTag JumpTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Jump"), true);
 	AbilitySystemComp->AbilityInputTagReleased(JumpTag);
+}
+
+void AGLDCharacter::ActiveMeleeAttack()
+{
+	GetGLDComboComponent()->SetPressed();
+	FGameplayTag Tag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Melee"), true);
+	AbilitySystemComp->AbilityInputTagPressed(Tag);
+}
+
+void AGLDCharacter::ComboMeleeAttack()
+{
+	//直接停止当前动画，播放下一段连招动画
+	//if(GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
+	//{
+		GetAbilitySystemComponent()->StopMontageIfCurrent(*GetGLDComboComponent()->GetLastPlayAnimMontage());
+		ActiveMeleeAttack();
+	//}
 }
 
 void AGLDCharacter::DoMove(float Right, float Forward)
