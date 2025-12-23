@@ -19,6 +19,7 @@ class AGLDPlayerController;
 class AGLDPlayerState;
 class UGLDGameplayAbility;
 class UGLDAttributeSetCharacter;
+class UGLDHealthComponent;
 
 UCLASS()
 class GLD_API AGLDCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface,public IGameplayCueInterface
@@ -49,11 +50,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
 	TObjectPtr<UGLDComboComponent> ComboComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GLD|Character")
+	TObjectPtr<UGLDHealthComponent> HealthComp;
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, TSubclassOf<UGLDGameplayAbility>> AbilitiesToAdd;
 	TMap<FGameplayTag, FGameplayAbilitySpecHandle> AbilitiesToActive;
 
 	TObjectPtr<UGLDAttributeSetCharacter> AttributeSet;
+	UFUNCTION()
+	virtual void OnDeathStarted(AActor* OwningActor);
+	UFUNCTION()
+	virtual void OnDeathFinished(AActor* OwningActor);
+
+	void DisableMovementAndCollision();
+
+	void DestroyDueToDeath();
+	void UninitAndDestroy();
+
+	// Called when the death sequence for the character has completed
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeathFinished"))
+	void K2_OnDeathFinished();
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
@@ -61,10 +78,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	AGLDPlayerController* GetGLDPlayerController() const;
+
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	AGLDPlayerState* GetGLDPlayerState() const;
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	UGLDComboComponent* GetGLDComboComponent() const;
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
+	UGLDHealthComponent* GetGLDHealthComponent() const;
+
 
 public:
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;

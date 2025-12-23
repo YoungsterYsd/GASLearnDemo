@@ -124,11 +124,11 @@ void AGLDCharacter::ActiveMeleeAttack()
 void AGLDCharacter::ComboMeleeAttack()
 {
 	//直接停止当前动画，播放下一段连招动画
-	//if(GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
-	//{
+	if(GetLocalRole() == ENetRole::ROLE_AutonomousProxy)
+	{
 		GetAbilitySystemComponent()->StopMontageIfCurrent(*GetGLDComboComponent()->GetLastPlayAnimMontage());
 		ActiveMeleeAttack();
-	//}
+	}
 }
 
 void AGLDCharacter::DoMove(float Right, float Forward)

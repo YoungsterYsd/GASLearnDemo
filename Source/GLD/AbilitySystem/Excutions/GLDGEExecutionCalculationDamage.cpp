@@ -109,7 +109,7 @@ void UGLDGEExecutionCalculationDamage::Execute_Implementation(const FGameplayEff
 	float FixedDamage = FMath::Max(0.f, FlatDamageBonus - FlatDamageReduction);
 	// º∆À„◊Ó÷’…À∫¶
 	float FinalDamage = BaseDamage * DefenseCoefficient * CritMultiplier * DamageMultiplier + FixedDamage;
-	FinalDamage =  - FMath::Max(1.f, FinalDamage);
+	FinalDamage =  FMath::Max(1.f, FinalDamage);
 
 #pragma endregion
 

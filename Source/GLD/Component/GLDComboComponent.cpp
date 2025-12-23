@@ -3,7 +3,7 @@
 
 #include "Component/GLDComboComponent.h"
 
-UGLDComboComponent::UGLDComboComponent(const FObjectInitializer& ObjectInitializer)
+UGLDComboComponent::UGLDComboComponent(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }

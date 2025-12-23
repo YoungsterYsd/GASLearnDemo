@@ -7,6 +7,9 @@
 #include "GLDGameplayAbility.h"
 #include "GLDComboComponent.h"
 #include "GLDAttributeSetCharacter.h"
+#include "GLDHealthComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "AbilitySystem/GLDAbilitySystemComponent.h"
 
 // Sets default values
@@ -20,12 +23,17 @@ AGLDCharacterBase::AGLDCharacterBase(const FObjectInitializer& objInitor) :Super
 	AbilitySystemComp = CreateDefaultSubobject<UGLDAbilitySystemComponent>(TEXT("AbilitySystemComp"));
 	AbilitySystemComp->SetIsReplicated(true);
 	AbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-	SetNetUpdateFrequency(100.f);
 
 	ComboComp = CreateDefaultSubobject<UGLDComboComponent>(TEXT("ComboComp"));
 	ComboComp->SetIsReplicated(false);
 	AttributeSet = CreateDefaultSubobject<UGLDAttributeSetCharacter>(TEXT("CharacterAttributeSet"));
 
+	HealthComp = CreateDefaultSubobject<UGLDHealthComponent>(TEXT("CharacterHealthComponent"));
+	HealthComp->SetIsReplicated(true);
+	HealthComp->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
+	HealthComp->OnDeathFinished.AddDynamic(this, &ThisClass::OnDeathFinished);
+
+	SetNetUpdateFrequency(100.f);
 }
 
 // Called when the game starts or when spawned
@@ -50,7 +58,7 @@ void AGLDCharacterBase::BeginPlay()
 			AbilitiesToActive.Add(AbilityPair.Key, AbilitySpecHandle);
 		}
 	}
-
+	HealthComp->InitializeWithAbilitySystem(AbilitySystemComp);
 }
 
 void AGLDCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -71,6 +79,50 @@ void AGLDCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void AGLDCharacterBase::OnDeathStarted(AActor* OwningActor)
+{
+	DisableMovementAndCollision();
+}
+
+void AGLDCharacterBase::OnDeathFinished(AActor* OwningActor)
+{
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::DestroyDueToDeath);
+}
+
+void AGLDCharacterBase::DisableMovementAndCollision()
+{
+	if (Controller)
+	{
+		Controller->SetIgnoreMoveInput(true);
+	}
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	check(CapsuleComp);
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	UCharacterMovementComponent* MoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
+	MoveComp->StopMovementImmediately();
+	MoveComp->DisableMovement();
+}
+
+void AGLDCharacterBase::DestroyDueToDeath()
+{
+	K2_OnDeathFinished();//调用蓝图表现
+
+	UninitAndDestroy();
+}
+
+void AGLDCharacterBase::UninitAndDestroy()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		DetachFromControllerPendingDestroy();
+		SetLifeSpan(0.1f);
+	}
+	HealthComp->UninitializeFromAbilitySystem();
+	SetActorHiddenInGame(true);
+}
+
 
 UGLDAbilitySystemComponent* AGLDCharacterBase::GetGLDAbilitySystemComponent() const
 {
@@ -95,6 +147,11 @@ AGLDPlayerState* AGLDCharacterBase::GetGLDPlayerState() const
 UGLDComboComponent* AGLDCharacterBase::GetGLDComboComponent() const
 {
 	return ComboComp;
+}
+
+UGLDHealthComponent* AGLDCharacterBase::GetGLDHealthComponent() const
+{
+	return HealthComp;
 }
 
 void AGLDCharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
