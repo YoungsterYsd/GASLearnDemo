@@ -57,12 +57,22 @@ void AGLDCharacterBase::BeginPlay()
 			const FGameplayAbilitySpecHandle AbilitySpecHandle =  AbilitySystemComp->GiveAbility(AbilitySpec);
 			AbilitiesToActive.Add(AbilityPair.Key, AbilitySpecHandle);
 		}
+		//死亡能力初始化，获取类、创建Spec、指定来源、给予能力。
+		UGLDGameplayAbility* DeathAbilityCDO = DeathAbilityClass->GetDefaultObject<UGLDGameplayAbility>();
+		FGameplayAbilitySpec DeathAbilityCDOSpec(DeathAbilityCDO, 1);
+		DeathAbilityCDOSpec.SourceObject = this;
+		DeathAbilityHandle = AbilitySystemComp->GiveAbility(DeathAbilityCDOSpec);
 	}
 	HealthComp->InitializeWithAbilitySystem(AbilitySystemComp);
 }
 
 void AGLDCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	//析构时取消能力注册，其实没必要
+	if (AbilitySystemComp && GetLocalRole() == ::ENetRole::ROLE_Authority)
+	{
+		AbilitySystemComp->ClearAllAbilities();
+	}
 	Super::EndPlay(EndPlayReason);
 }
 

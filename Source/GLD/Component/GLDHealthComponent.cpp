@@ -7,6 +7,7 @@
 #include "GLDAbilitySystemComponent.h"
 #include "GLDAttributeSetCharacter.h"
 #include "GLDGameplayTag.h"
+#include "GLDGameplayAbility_Death.h"
 
 UGLDHealthComponent::UGLDHealthComponent(const FObjectInitializer& ObjInitor):Super(ObjInitor)
 {
@@ -234,7 +235,6 @@ void UGLDHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor* Da
 		// Send the "GameplayEvent.Death" gameplay event through the owner's ability system.  This can be used to trigger a death gameplay ability.
 		{
 			FGameplayEventData Payload;
-
 			Payload.EventTag = GLDGameplayTag::GameplayEvent_Death;
 			Payload.Instigator = DamageInstigator;
 			Payload.Target = AbilitySystemComponent->GetAvatarActor();

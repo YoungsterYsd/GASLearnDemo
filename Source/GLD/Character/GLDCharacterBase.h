@@ -56,6 +56,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "GLD|Character",meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, TSubclassOf<UGLDGameplayAbility>> AbilitiesToAdd;
 	TMap<FGameplayTag, FGameplayAbilitySpecHandle> AbilitiesToActive;
+	//DeathHandle
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "GLD|Character", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGLDGameplayAbility> DeathAbilityClass;
+	FGameplayAbilitySpecHandle DeathAbilityHandle;
 
 	TObjectPtr<UGLDAttributeSetCharacter> AttributeSet;
 	UFUNCTION()
