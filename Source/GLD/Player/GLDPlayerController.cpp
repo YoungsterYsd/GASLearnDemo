@@ -13,7 +13,14 @@
 #include "GLDCharacterBase.h"
 #include "GLDHUD.h"
 #include "AbilitySystem/GLDAbilitySystemComponent.h"
+#include "GLDNumberPopComponent_UMG.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+
+AGLDPlayerController::AGLDPlayerController(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+{
+	NumberPopComp = CreateDefaultSubobject<UGLDNumberPopComponent_UMG>(TEXT("NumberPopComponent"));
+	NumberPopComp->SetIsReplicated(false);
+}
 
 void AGLDPlayerController::BeginPlay()
 {
@@ -96,4 +103,9 @@ UGLDAbilitySystemComponent* AGLDPlayerController::GetGLDAbilitySystemComponent()
 AGLDHUD* AGLDPlayerController::GetGLDHUD()const
 {
 	return CastChecked<AGLDHUD>(GetHUD(), ECastCheckedType::NullAllowed);
+}
+
+UGLDNumberPopComponent_UMG* AGLDPlayerController::GetGLDNumberPopComponent() const
+{
+	return NumberPopComp;
 }

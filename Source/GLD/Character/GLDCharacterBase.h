@@ -81,6 +81,7 @@ public:
 	UGLDAbilitySystemComponent* GetGLDAbilitySystemComponent() const;
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	AGLDPlayerController* GetGLDPlayerController() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
