@@ -76,7 +76,22 @@ void AGLDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		//Attack
 		EnhancedInputComponent->BindAction(MeleeAttackAction, ETriggerEvent::Started, this, &AGLDCharacter::ActiveMeleeAttack);
+		EnhancedInputComponent->BindAction(AirAttackAction, ETriggerEvent::Started, this, &AGLDCharacter::AirAttack);
 
+		// 1
+		EnhancedInputComponent->BindAction(KeyAction_1, ETriggerEvent::Started, this, &AGLDCharacter::Key_1);
+
+		// 2
+		EnhancedInputComponent->BindAction(KeyAction_2, ETriggerEvent::Started, this, &AGLDCharacter::Key_2);
+
+		// 3
+		EnhancedInputComponent->BindAction(KeyAction_3, ETriggerEvent::Started, this, &AGLDCharacter::Key_3);
+
+		// 4
+		EnhancedInputComponent->BindAction(KeyAction_4, ETriggerEvent::Started, this, &AGLDCharacter::Key_4);
+
+		// Tab
+		EnhancedInputComponent->BindAction(KeyAction_Tab, ETriggerEvent::Started, this, &AGLDCharacter::Key_Tab);
 	}
 	else
 	{
@@ -119,6 +134,49 @@ void AGLDCharacter::ActiveMeleeAttack()
 	GetGLDComboComponent()->SetPressed();
 	FGameplayTag Tag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Melee"), true);
 	AbilitySystemComp->AbilityInputTagPressed(Tag);
+}
+
+void AGLDCharacter::AirAttack()
+{
+	FGameplayTag InputTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.AirAttack"), true);
+
+	GetGLDAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+}
+
+void AGLDCharacter::Key_1()
+{
+	FGameplayTag InputTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Key.1"), true);
+
+	GetGLDAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+}
+
+void AGLDCharacter::Key_2()
+{
+	FGameplayTag InputTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Key.2"), true);
+
+	GetGLDAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+}
+
+void AGLDCharacter::Key_3()
+{
+	FGameplayTag InputTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Key.3"), true);
+
+	GetGLDAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+}
+
+void AGLDCharacter::Key_4()
+{
+	FGameplayTag InputTag = GLDGameplayTag::FindTagByString(TEXT("InputTag.Key.4"), true);
+
+	GetGLDAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+}
+
+void AGLDCharacter::Key_Tab()
+{
+	bool bShowMouse = GetGLDPlayerController()->bShowMouseCursor;
+
+	GetGLDPlayerController()->SetShowMouseCursor(!bShowMouse);
+
 }
 
 void AGLDCharacter::ComboMeleeAttack()

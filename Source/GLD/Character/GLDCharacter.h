@@ -54,6 +54,29 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MeleeAttackAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* AirAttackAction;
+
+	/** Melee Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* KeyAction_1;
+
+	/** Melee Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* KeyAction_2;
+
+	/** Melee Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* KeyAction_3;
+
+	/** Melee Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* KeyAction_4;
+
+	/** Melee Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* KeyAction_Tab;
+
 public:
 
 	/** Constructor */
@@ -74,7 +97,14 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void ActivateJump();
 	void DeactivateJump();
+	//此处可以优化
 	void ActiveMeleeAttack();
+	void AirAttack();
+	void Key_1();
+	void Key_2();
+	void Key_3();
+	void Key_4();
+	void Key_Tab();
 public:
 	void ComboMeleeAttack();
 
