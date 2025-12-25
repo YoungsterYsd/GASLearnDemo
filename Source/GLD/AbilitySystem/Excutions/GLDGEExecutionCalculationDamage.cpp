@@ -5,6 +5,7 @@
 // 以结构体封装属性捕获定义，统一管理
 struct FDamageStatics
 {
+	FGameplayEffectAttributeCaptureDefinition DamageDef;
 	FGameplayEffectAttributeCaptureDefinition Health_SourceDef;
 	FGameplayEffectAttributeCaptureDefinition MaxHealth_SourceDef;
 	FGameplayEffectAttributeCaptureDefinition Health_TargetDef;
@@ -21,6 +22,7 @@ struct FDamageStatics
 
 	FDamageStatics()
 	{
+		DamageDef = FGameplayEffectAttributeCaptureDefinition(UGLDAttributeSetCharacter::GetDamageAttribute(), EGameplayEffectAttributeCaptureSource::Source, true);
 		Health_SourceDef = FGameplayEffectAttributeCaptureDefinition(UGLDAttributeSetCharacter::GetHealthAttribute(), EGameplayEffectAttributeCaptureSource::Source, true);
 		MaxHealth_SourceDef = FGameplayEffectAttributeCaptureDefinition(UGLDAttributeSetCharacter::GetMaxHealthAttribute(), EGameplayEffectAttributeCaptureSource::Source, true);
 		Health_TargetDef = FGameplayEffectAttributeCaptureDefinition(UGLDAttributeSetCharacter::GetHealthAttribute(), EGameplayEffectAttributeCaptureSource::Target, true);
@@ -46,6 +48,7 @@ static FDamageStatics& DamageStatics()
 UGLDGEExecutionCalculationDamage::UGLDGEExecutionCalculationDamage()
 {
 	//属性捕获 4 类内获取
+	RelevantAttributesToCapture.Add(DamageStatics().DamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().Health_SourceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().MaxHealth_SourceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().Health_TargetDef);
@@ -76,6 +79,7 @@ void UGLDGEExecutionCalculationDamage::Execute_Implementation(const FGameplayEff
 	float BaseDamage = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackDef, EvaluateParameters, BaseDamage);
 #pragma region DamageCalculate
+	float Damage = 0.f;
 	// 捕获防御相关属性
 	float Defense = 0.f;
 	float DefensePenetration = 0.f;
@@ -88,6 +92,7 @@ void UGLDGEExecutionCalculationDamage::Execute_Implementation(const FGameplayEff
 	// 捕获固定伤害和减免
 	float FlatDamageBonus = 0.f;
 	float FlatDamageReduction = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageDef, EvaluateParameters, Damage);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DefenseDef, EvaluateParameters, Defense);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DefensePenetrationDef, EvaluateParameters, DefensePenetration);
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalRateDef, EvaluateParameters, CriticalRate);
@@ -104,15 +109,15 @@ void UGLDGEExecutionCalculationDamage::Execute_Implementation(const FGameplayEff
 	bool bIsCritical = FMath::FRand() < CriticalRate;
 	float CritMultiplier = 1.f + (bIsCritical ? CriticalDamage : 0.f);
 	// 增减乘区计算
-	float DamageMultiplier =DamageBonus - DamageReduction;
+	float DamageMultiplier =1.f + DamageBonus - DamageReduction;
 	// 固定伤害区间
 	float FixedDamage = FMath::Max(0.f, FlatDamageBonus - FlatDamageReduction);
 	// 计算最终伤害
-	float FinalDamage = BaseDamage * DefenseCoefficient * CritMultiplier * DamageMultiplier + FixedDamage;
+	float FinalDamage = Damage * DefenseCoefficient * CritMultiplier * DamageMultiplier + FixedDamage;
 	FinalDamage =  FMath::Max(1.f, FinalDamage);
 
 #pragma endregion
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
-		UGLDAttributeSetCharacter::GetDamageAttribute(), EGameplayModOp::Additive, BaseDamage));
+		UGLDAttributeSetCharacter::GetDamageAttribute(), EGameplayModOp::Additive, FinalDamage));
 }
