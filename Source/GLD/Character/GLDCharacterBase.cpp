@@ -62,6 +62,16 @@ void AGLDCharacterBase::BeginPlay()
 		FGameplayAbilitySpec DeathAbilityCDOSpec(DeathAbilityCDO, 1);
 		DeathAbilityCDOSpec.SourceObject = this;
 		DeathAbilityHandle = AbilitySystemComp->GiveAbility(DeathAbilityCDOSpec);
+		//初始化冷却
+		AbilitySystemComp->AbilityCommittedCallbacks.AddLambda([this](UGameplayAbility* InGameplayAbility) {
+
+			float CoolDownTime = InGameplayAbility->GetCooldownTimeRemaining();
+
+			FGameplayTagContainer  AbilityTags = InGameplayAbility->AbilityTags;
+
+			ClientRPCFunction(AbilityTags, CoolDownTime);
+
+			});
 	}
 	HealthComp->InitializeWithAbilitySystem(AbilitySystemComp);
 }
@@ -133,6 +143,11 @@ void AGLDCharacterBase::UninitAndDestroy()
 	SetActorHiddenInGame(true);
 }
 
+
+void AGLDCharacterBase::ClientRPCFunction_Implementation(FGameplayTagContainer OutAbilityTag, float CooldownTime)
+{   //广播能力冷却
+	AbilityCoolDownDelegate.Broadcast(OutAbilityTag, CooldownTime);
+}
 
 UGLDAbilitySystemComponent* AGLDCharacterBase::GetGLDAbilitySystemComponent() const
 {

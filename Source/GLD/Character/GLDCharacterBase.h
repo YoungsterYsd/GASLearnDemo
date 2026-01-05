@@ -21,6 +21,9 @@ class UGLDGameplayAbility;
 class UGLDAttributeSetCharacter;
 class UGLDHealthComponent;
 
+//×öÀäÈ´¹ã²¥
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGenericAbilityCoolDownDelegate, FGameplayTagContainer, OutAbilityTag, float, CooldownTime);
+
 UCLASS()
 class GLD_API AGLDCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface,public IGameplayCueInterface
 {
@@ -76,6 +79,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeathFinished"))
 	void K2_OnDeathFinished();
 
+	UFUNCTION(BlueprintCallable, Client, Reliable)
+	void ClientRPCFunction(FGameplayTagContainer OutAbilityTag, float CooldownTime);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	UGLDAbilitySystemComponent* GetGLDAbilitySystemComponent() const;
@@ -91,6 +97,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GLD|Character")
 	UGLDHealthComponent* GetGLDHealthComponent() const;
 
+	UPROPERTY(BlueprintAssignable)
+	FGenericAbilityCoolDownDelegate AbilityCoolDownDelegate;
 
 public:
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
