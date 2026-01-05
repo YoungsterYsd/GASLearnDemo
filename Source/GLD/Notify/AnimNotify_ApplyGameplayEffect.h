@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "General Configuration")
 	bool bBind;
 
-	//BOx的大小
+	//Box的大小
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hit Box")
 	FVector BoxExtent;
 

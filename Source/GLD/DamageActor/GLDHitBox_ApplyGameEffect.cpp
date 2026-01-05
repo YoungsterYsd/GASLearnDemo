@@ -14,9 +14,9 @@ AGLDHitBox_ApplyGameEffect::AGLDHitBox_ApplyGameEffect(const FObjectInitializer&
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	//创建碰撞盒子
 	HitCollisionRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("CollisionRootComponent"));
 	RootComponent = HitCollisionRootComponent;
-
 	HitDamage = CreateDefaultSubobject<UBoxComponent>((TEXT("HitDamage")));
 	HitDamage->SetupAttachment(RootComponent);
 
@@ -33,13 +33,10 @@ AGLDHitBox_ApplyGameEffect::AGLDHitBox_ApplyGameEffect(const FObjectInitializer&
 	//关闭重力 ，不关重力就是抛物线
 	ProjectileMovement->ProjectileGravityScale = 0.f;
 	ProjectileMovement->SetUpdatedComponent(RootComponent);
-
 	ProjectileMovement->SetIsReplicated(true);
 
 	// 默认近程攻击
 	HitCollisionType = EGLDHitCollisionType::HITCOLLISIONTYPE_SHORT_RANGE_ATTACK;
-
-
 }
 
 void AGLDHitBox_ApplyGameEffect::PreInitCollision(AActor* InMyInstigator)
@@ -86,7 +83,7 @@ void AGLDHitBox_ApplyGameEffect::PreInitCollision(AActor* InMyInstigator)
 
 void AGLDHitBox_ApplyGameEffect::HandleDamage(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != GetInstigator())
+	if (OtherActor != GetInstigator())//不对自己造成伤害
 	{
 		if (AGLDCharacterBase* InTarget = Cast<AGLDCharacterBase>(OtherActor))
 		{
@@ -125,16 +122,9 @@ void AGLDHitBox_ApplyGameEffect::HandleDamage(UPrimitiveComponent* OverlappedCom
 
 					//标记为已处理
 					AttackedTarget.AddUnique(InTarget);
-
-
-
-
 				}
 			}
-
-
 		}
-
 	}
 
 }
@@ -176,19 +166,14 @@ bool AGLDHitBox_ApplyGameEffect::IsExist(AGLDCharacterBase* InNewTaget) const
 void AGLDHitBox_ApplyGameEffect::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (UPrimitiveComponent* InHitComponent = GetHitDamage())
 	{
 		InHitComponent->SetHiddenInGame(true);
 		InHitComponent->OnComponentBeginOverlap.AddDynamic(this, &AGLDHitBox_ApplyGameEffect::HandleDamage);
-
 	}
-
 }
 
 void AGLDHitBox_ApplyGameEffect::Tick(float DeltaTime)
 {
-
 	Super::Tick(DeltaTime);
-
 }

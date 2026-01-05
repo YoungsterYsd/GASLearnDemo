@@ -1,5 +1,4 @@
 #include "AnimNotify_ApplyGameplayEffect.h"
-
 #include "GLDHitBox_ApplyGameEffect.h"
 #include "GLDCharacterBase.h"
 
@@ -31,9 +30,7 @@ void UAnimNotify_ApplyGameplayEffect::Notify(USkeletalMeshComponent* MeshComp, U
 			FVector ComponentLocation = MeshComp->GetSocketLocation(InSocketName);
 			FRotator ComponentRotation = MeshComp->GetSocketRotation(InSocketName);
 
-
 			AGLDCharacterBase* CheckChatacter = Cast<AGLDCharacterBase>(InCharacter);
-
 			if (!CheckChatacter)
 			{
 				ComponentRotation += FRotator(0, 90, 0);
@@ -43,10 +40,6 @@ void UAnimNotify_ApplyGameplayEffect::Notify(USkeletalMeshComponent* MeshComp, U
 			FTransform Transform((ComponentRotation + RotationOffset).Quaternion(), ComponentLocation);
 
 			FString VForward = ComponentLocation.ToString();
-
-// FString::Printf 格式话字符串
-//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::White, FString::Printf(TEXT(",%s"), *VForward));
-
 			if (AGLDHitBox_ApplyGameEffect* HitCollision = InCharacter->GetWorld()->SpawnActorDeferred<AGLDHitBox_ApplyGameEffect>(
 				HitObjectClass,
 				Transform,
@@ -60,33 +53,23 @@ void UAnimNotify_ApplyGameplayEffect::Notify(USkeletalMeshComponent* MeshComp, U
 				// 		
 				//构造体的预初始化 
 				HitCollision->PreInitCollision(InCharacter);
-
 				//设置激活的GE类
 				HitCollision->SetGameplayEffect(EffectClass);
-
 				HitCollision->SetBoxExtent(BoxExtent);
-
 				//设置相对位置
 				FVector RelativeLocation = HitCollision->GetHitDamage()->GetRelativeLocation();
 				HitCollision->SetHitDamageRelativePosition(RelativeLocation + RelativeOffsetLocation);
-
 				//设置生命周期
 				HitCollision->SetLifeSpan(LifeTime);
-
 				//结束延迟生成
 				HitCollision->FinishSpawning(Transform);
-
 
 				//必须保证对象生成后再附加，否则附加会失败
 				if (bBind)
 				{
 					HitCollision->AttachToComponent(MeshComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale, InSocketName);
 				}
-
 			}
-
-
-
 		}
 	}
 
