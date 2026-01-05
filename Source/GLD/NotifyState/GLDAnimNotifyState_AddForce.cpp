@@ -10,9 +10,6 @@ UGLDAnimNotifyState_AddForce::UGLDAnimNotifyState_AddForce()
 	, TotalDurationConsuming(0.f)
 	, ForceSizeConsuming(0.f)
 {
-
-
-
 }
 
 void UGLDAnimNotifyState_AddForce::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
