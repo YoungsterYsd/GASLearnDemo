@@ -130,12 +130,10 @@ bool UGLDEquipmentComponent::RemoveEquipmentItem(int32 Index_Remove)
 	UAbilitySystemComponent* AbilitySystemComponent = Cast<AGLDCharacterBase>(GetOwner())->GetAbilitySystemComponent();
 	if (FGLDEquipmentItem* UndockEquipment = &EquipmentItems[Index_Remove])
 	{
-
-		if (UndockEquipment->IsValid())
+		if (UndockEquipment->ActiveEquipmentEffectHandle.IsValid())
 		{
 			// 移除buff
 			bool bRemoveGameplayEffect = AbilitySystemComponent->RemoveActiveGameplayEffect(UndockEquipment->ActiveEquipmentEffectHandle);
-
 			if (bRemoveGameplayEffect)
 			{
 				//重置自己
@@ -207,8 +205,6 @@ void UGLDEquipmentComponent::SwapFromEquToInv(int32 InEquipment_Index, int32 InI
 	UGLDInventoryComponent* InventoryComponent = Cast<UGLDInventoryComponent>(GetOwner()->FindComponentByClass(UGLDInventoryComponent::StaticClass()));
 
 	//已经在服务器上了,由人物RPC进行调用
-
-
 	//1 还是要判断是不是仓库里面的武器在交互,客户端数据不可信
 	//如果仓库是空的?
 
@@ -259,8 +255,6 @@ void UGLDEquipmentComponent::SwapFromEquToInv(int32 InEquipment_Index, int32 InI
 			AbilitySystemComponent->MakeOutgoingSpec(EquipmentItems[InEquipment_Index].RPGEquimentItemPointer->GameplayEffectClass,
 				1,
 				AbilitySystemComponent->MakeEffectContext());
-
-
 		//应用GE 存储激活的效果
 		EquipmentItems[InEquipment_Index].ActiveEquipmentEffectHandle 
 		= AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data);
@@ -274,7 +268,6 @@ void UGLDEquipmentComponent::SwapFromEquToInv(int32 InEquipment_Index, int32 InI
 	//g	刷新仓库和装备
 	CallServerDownLoadInfo();
 	InventoryComponent->CallServerDownLoadInfo();
-
 }
 
 void UGLDEquipmentComponent::EquipmentItemChanged_Implementation(const TArray<FGLDEquipmentItem>& InEquipmentItems)

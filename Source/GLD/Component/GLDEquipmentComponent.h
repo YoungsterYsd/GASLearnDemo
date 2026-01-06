@@ -76,24 +76,14 @@ public:
 	void SwapEquipmentItem(int32 Index_i, int32 Index_j);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-	void    SwapFromInvToEqu(int32 InInventory_Index, int32 InEquipment_Index);
+	void SwapFromInvToEqu(int32 InInventory_Index, int32 InEquipment_Index);
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
-	void    SwapFromEquToInv(int32 InEquipment_Index, int32 InInventory_Index);
-
-
-
-
-
-
-
-
+	void SwapFromEquToInv(int32 InEquipment_Index, int32 InInventory_Index);
 
 	//通知UI刷新界面
 	UFUNCTION(Client, Reliable)
 	void EquipmentItemChanged(const TArray<FGLDEquipmentItem>& InEquipmentItems);
-
-
 
 protected:
 

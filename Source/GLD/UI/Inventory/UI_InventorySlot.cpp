@@ -108,7 +108,6 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 						//注意这里是判定自己的物品类型 而不是负载的物品类型
 						//A2 如果我们自己是一个装备,我们就呼叫服务器执行装备交换								
 						//如果是空的呢?我们也要呼叫交换	 	
-
 						if (Cast<UGLDEquipment>(InCharacter->GetGLDInventoryComponent()->GetInventoryItemByID(InventoryId))
 							|| !InCharacter->GetGLDInventoryComponent()->GetInventoryItemInfoByID(InventoryId).IsValid())
 						{

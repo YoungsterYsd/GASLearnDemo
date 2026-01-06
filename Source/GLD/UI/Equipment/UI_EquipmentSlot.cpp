@@ -48,8 +48,6 @@ FReply UUI_EquipmentSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, c
 			Reply.DetectDrag(SlateWidgetDrag.ToSharedRef(), EKeys::RightMouseButton);
 			return Reply;
 		}
-
-
 	}
 	return FReply::Handled();
 }
@@ -76,17 +74,11 @@ void UUI_EquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const 
 				//传入我们的负载信息，告知我们从哪里拖过来的，从哪里的
 				InDropOperation->Payload = this;
 				OutOperation = InDropOperation;
-
 				HideSlotIcon();
 			}
-
 		}
-
 	}
-
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
-
-
 }
 
 bool UUI_EquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
@@ -114,7 +106,6 @@ bool UUI_EquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 					break;
 				case ESlotType::SlotType_SkillPanelSlot:
 					check(false);
-
 					break;
 				case ESlotType::SlotType_InventorySlot:
 
@@ -130,28 +121,19 @@ bool UUI_EquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 								//A2 服务器更新覆盖
 								//向服务器发起更新逻辑
 								//已经完成客户端判定是两个装备进行交换了
-
 								InCharacter->SwapFromInvToEqu(MyInventorySlot->InventoryId, EquipmentId);
-
 								bDrop = true;
 								//本来要做客户端的交互,这里不做了,等待服务器刷新数据过来
-
 								//完整逻辑:客户端判定->客户端渲染->客户端发出申请->服务器响应->客户端逻辑更新覆盖
-
-
 							}
 							else
 							{
-
 								//判定不是装备,就不能拖进装备栏
 								MyInventorySlot->ShowSlotIcon();
 								MyInventorySlot->ShowInventoryNum();
 								bDrop = true;
-
 							}
-
 						}
-
 					}
 					break;
 				case ESlotType::SlotType_EquipmentSlot:
@@ -161,32 +143,14 @@ bool UUI_EquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 					{
 						InCharacter->SwapEquipmentItem(InEquipmentSlot->EquipmentId, EquipmentId);
 						bDrop = true;
-
 					}
-
-
 					break;
 				default:
 					check(false);
 					break;
 				}
-
-
-
-
-
-
 			}
 		}
-
 	}
-
-
-
-
-
-
-
-
 	return bDrop;
 }
