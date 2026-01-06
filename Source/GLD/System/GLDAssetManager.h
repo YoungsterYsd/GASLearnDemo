@@ -9,10 +9,17 @@
 /**
  * 
  */
+class UGLDItem;
 UCLASS()
 class GLD_API UGLDAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
 public :
 	void StartInitialLoading() override;
+
+	static const FPrimaryAssetType PotionItemType;
+	static const FPrimaryAssetType TokenItemType;
+	static const FPrimaryAssetType EquipmentItemType;
+
+	UGLDItem* ForceLoadItem(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning);
 };

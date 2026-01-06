@@ -14,6 +14,4 @@ class GLD_API UGLDToken : public UGLDItem
 public:
 	/** Constructor */
 	UGLDToken();
-
-
 };

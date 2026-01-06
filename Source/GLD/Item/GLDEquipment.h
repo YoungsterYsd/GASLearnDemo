@@ -18,7 +18,6 @@ public:
 	/** Constructor */
 	UGLDEquipment();
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
