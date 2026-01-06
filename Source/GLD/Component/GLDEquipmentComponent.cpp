@@ -1,6 +1,5 @@
 #include "GLDEquipmentComponent.h"
 
-
 #include "GLDPotion.h"
 #include "GLDEquipment.h"
 #include "Net/UnrealNetwork.h"
@@ -31,32 +30,24 @@ void FGLDEquipmentItem::ResetSelf()
 	//释放原先的GE 如果有的话
 	ActiveEquipmentEffectHandle.Invalidate();
 	RPGEquimentItemPointer = nullptr;
-
 }
 
 UGLDEquipmentComponent::UGLDEquipmentComponent(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
 	EquipmentItems.AddDefaulted(6);
-
 	SetIsReplicatedByDefault(true);
-
 }
 
 void UGLDEquipmentComponent::OnRep_EquipmentItems()
 {
 	OnEquipmentItemChanged.ExecuteIfBound(EquipmentItems);
-
-
-
 }
 
 void UGLDEquipmentComponent::CallServerDownLoadInfo()
 {
 	EquipmentItemChanged(EquipmentItems);
-
 }
 
 void UGLDEquipmentComponent::BeginPlay()
@@ -67,7 +58,6 @@ void UGLDEquipmentComponent::BeginPlay()
 void UGLDEquipmentComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
 bool UGLDEquipmentComponent::AddEquipmentItem(const FGLDEquipmentItem& NewEquipmentItem)
@@ -82,41 +72,33 @@ bool UGLDEquipmentComponent::AddEquipmentItem(const FGLDEquipmentItem& NewEquipm
 		{
 			UE_LOG(LogTemp, Warning, TEXT("AddInventoryItem: Failed trying to add null item!"));
 			return false;
-
 		}
 
-		//去找一下有米有空的位置
+		//去找一下空的位置
 		//1. 往数组里面增加
 		for (size_t i = 0; i < EquipmentItems.Num(); i++)
 		{
 			if (!EquipmentItems[i].IsValid())
 			{
 				EquipmentItems[i] = NewEquipmentItem;
-
 				//2.应用新的效果
-
 				//创建GEhandle
 				//拿到我们的 GAS系统组件
 				//创建GE的实例 ，传入阐述， GE本体，GE的等级，GE的上下文信息
-
 				const	FGameplayEffectSpecHandle NewHandle =
-					AbilitySystemComponent->MakeOutgoingSpec(EquipmentItems[i].RPGEquimentItemPointer->GameplayEffectClass,
+					AbilitySystemComponent->MakeOutgoingSpec
+					(
+						EquipmentItems[i].RPGEquimentItemPointer->GameplayEffectClass,
 						1,
-						AbilitySystemComponent->MakeEffectContext());
-
+						AbilitySystemComponent->MakeEffectContext()
+					);
 				//应用GE 存储激活的效果
 				EquipmentItems[i].ActiveEquipmentEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data);
-
 				//EquipmentItemChanged(EquipmentItems);
-
 				return true;
-
 			}
-
 		}
 	}
-
-
 	return false;
 }
 
@@ -125,28 +107,21 @@ void UGLDEquipmentComponent::UndockEquipmentByID(int32 InUndockEquipmentID)
 	//必须在服务器上调用!!!!!!
 	if (HasAuthority())
 	{
-	UGLDInventoryComponent* InventoryComponent = Cast<UGLDInventoryComponent>(GetOwner()->FindComponentByClass(UGLDInventoryComponent::StaticClass()));
-
-	//1.拿到装备实例
-
-	if (EquipmentItems[InUndockEquipmentID].IsValid())
-	{
-		FGLDEquipmentItem* UndockEquipment = &EquipmentItems[InUndockEquipmentID];
-
-		//2.尝试添加到仓库组件
-		FGLDInventoryItem AddInventoryItem;
-		AddInventoryItem.RPGItem = UndockEquipment->RPGEquimentItemPointer;
-		AddInventoryItem.ItemCount = 1;
-
-		if (InventoryComponent->AddInventoryItem(AddInventoryItem))
+		UGLDInventoryComponent* InventoryComponent = Cast<UGLDInventoryComponent>(GetOwner()->FindComponentByClass(UGLDInventoryComponent::StaticClass()));
+		//1.拿到装备实例
+		if (EquipmentItems[InUndockEquipmentID].IsValid())
 		{
-			//3.添加成功了,移除自己
-			RemoveEquipmentItem(InUndockEquipmentID);
-			
-
-
+			FGLDEquipmentItem* UndockEquipment = &EquipmentItems[InUndockEquipmentID];
+			//2.尝试添加到仓库组件
+			FGLDInventoryItem AddInventoryItem;
+			AddInventoryItem.RPGItem = UndockEquipment->RPGEquimentItemPointer;
+			AddInventoryItem.ItemCount = 1;
+			if (InventoryComponent->AddInventoryItem(AddInventoryItem))
+			{
+				//3.添加成功了,移除自己
+				RemoveEquipmentItem(InUndockEquipmentID);
+			}
 		}
-	}
 	}
 }
 
@@ -158,9 +133,8 @@ bool UGLDEquipmentComponent::RemoveEquipmentItem(int32 Index_Remove)
 
 		if (UndockEquipment->IsValid())
 		{
-
 			// 移除buff
-			bool	bRemoveGameplayEffect = AbilitySystemComponent->RemoveActiveGameplayEffect(UndockEquipment->ActiveEquipmentEffectHandle);
+			bool bRemoveGameplayEffect = AbilitySystemComponent->RemoveActiveGameplayEffect(UndockEquipment->ActiveEquipmentEffectHandle);
 
 			if (bRemoveGameplayEffect)
 			{
@@ -168,13 +142,8 @@ bool UGLDEquipmentComponent::RemoveEquipmentItem(int32 Index_Remove)
 				UndockEquipment->ResetSelf();
 				return true;
 			}
-
-
 		}
 	}
-
-
-
 	return false;
 }
 
@@ -183,10 +152,8 @@ void UGLDEquipmentComponent::SwapEquipmentItem(int32 Index_i, int32 Index_j)
 	if (Index_i != Index_j && Index_i > INDEX_NONE && Index_i<EquipmentItems.Num() && Index_j>INDEX_NONE && Index_j < EquipmentItems.Num())
 	{
 		EquipmentItems.Swap(Index_i, Index_j);
-
 		EquipmentItemChanged(EquipmentItems);
 	}
-
 }
 
 void UGLDEquipmentComponent::SwapFromInvToEqu(int32 InInventory_Index, int32 InEquipment_Index)
@@ -194,68 +161,44 @@ void UGLDEquipmentComponent::SwapFromInvToEqu(int32 InInventory_Index, int32 InE
 	//已经在服务器上了,由人物RPC进行调用
 	UAbilitySystemComponent* AbilitySystemComponent = Cast<AGLDCharacterBase>(GetOwner())->GetAbilitySystemComponent();
 	UGLDInventoryComponent* InventoryComponent = Cast<UGLDInventoryComponent>(GetOwner()->FindComponentByClass(UGLDInventoryComponent::StaticClass()));
-
-
 	//1 还是要判断是不是仓库里面的武器在交互,客户端数据不可信
 	if (UGLDItem* InRPGItem = InventoryComponent->GetInventoryItemByID(InInventory_Index))
 	{
 		if (Cast<UGLDEquipment>(InRPGItem))
 		{
 			//2 已经判定好了 执行交换
-		
 			//a  先准备好要装入的新装备和物品
 			FGLDEquipmentItem NewEquipmentItem;
 			FGLDInventoryItem NewInventoryItem;
-
 			//b完成 赋值操作
 			NewEquipmentItem.RPGEquimentItemPointer = Cast<UGLDEquipment>(InRPGItem);
-
 			NewInventoryItem.RPGItem = (EquipmentItems[InEquipment_Index].RPGEquimentItemPointer);
 			NewInventoryItem.ItemCount = 1;
-
 			//c 移除装备
 			RemoveEquipmentItem(InEquipment_Index);
-
 			//d 添加装备 施加GE
-
 			EquipmentItems[InEquipment_Index] = NewEquipmentItem;
-
 			const	FGameplayEffectSpecHandle NewHandle =
-				AbilitySystemComponent->MakeOutgoingSpec(EquipmentItems[InEquipment_Index].RPGEquimentItemPointer->GameplayEffectClass,
-					1,
-					AbilitySystemComponent->MakeEffectContext());
-
-
+					AbilitySystemComponent->MakeOutgoingSpec
+					(	
+						EquipmentItems[InEquipment_Index].RPGEquimentItemPointer->GameplayEffectClass,
+						1,
+						AbilitySystemComponent->MakeEffectContext()
+					);
 			//应用GE 存储激活的效果
 			EquipmentItems[InEquipment_Index].ActiveEquipmentEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data);
-
-
 			//e 移除仓库
 			//f 添加仓库
-
 			InventoryComponent->ReplaceInventoryItem(NewInventoryItem, InInventory_Index);
-
 			//g	刷新仓库和装备
-
 			CallServerDownLoadInfo();
 			InventoryComponent->CallServerDownLoadInfo();
-
-
-
 		}
 		else
 		{
 			return;
 		}
-
-
 	}
-
-
-
-
-
-
 }
 
 void UGLDEquipmentComponent::SwapFromEquToInv(int32 InEquipment_Index, int32 InInventory_Index)

@@ -21,13 +21,8 @@ class GLD_API UUI_InventorySlot : public UUI_SlotBase
 	//拖拽显示图标类
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<class UUI_ICONDragDrog> ICODragDrogClass;
-
-
 public:
-
 	UUI_InventorySlot(const FObjectInitializer& ObjectInitializer);
-
-
 public:
 
 	UPROPERTY()
@@ -35,28 +30,14 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Num;
-
-
 public:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)override;
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-
-
-
 public:
-
 	void HideInventoryNum();
-
 	void ShowInventoryNum();
-
-
-
 public:
-
 	//当激活时触发，由蓝图配置映射输入
 	virtual void OnClickedWidget() override;
-
-
-
 };

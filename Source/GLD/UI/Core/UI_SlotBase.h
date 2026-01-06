@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI_Base.h"
+#include "GLDUIBase.h"
 
 #include "UI_SlotBase.generated.h"
 
@@ -12,7 +12,7 @@ class UButton;
  *
  */
 UCLASS()
-class GLD_API UUI_SlotBase : public UUI_Base
+class GLD_API UUI_SlotBase : public UGLDUIBase
 {
 	GENERATED_BODY()
 
@@ -32,7 +32,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<class UUI_InformationDescribe> UI_TipClass;
 
-
 public:
 
 	virtual void NativeConstruct() override;
@@ -46,7 +45,6 @@ public:
 	UFUNCTION()
 	virtual void OnClickedWidget() {};
 
-
 public:
 
 	FORCEINLINE ESlotType GetSlotType() {
@@ -55,6 +53,4 @@ public:
 
 protected:
 	ESlotType SlotType;
-
-
 };

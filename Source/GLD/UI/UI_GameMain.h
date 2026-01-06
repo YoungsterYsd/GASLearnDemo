@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI_Base.h"
+#include "GLDUIBase.h"
 #include "UI_GameMain.generated.h"
 
 
@@ -10,7 +10,7 @@
  *
  */
 UCLASS()
-class GLD_API UUI_GameMain : public UUI_Base
+class GLD_API UUI_GameMain : public UGLDUIBase
 {
 	GENERATED_BODY()
 

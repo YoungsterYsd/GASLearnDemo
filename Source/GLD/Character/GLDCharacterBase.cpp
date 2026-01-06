@@ -10,6 +10,8 @@
 #include "GLDHealthComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GLDInventoryComponent.h"
+#include "GLDEquipmentComponent.h"
 #include "AbilitySystem/GLDAbilitySystemComponent.h"
 
 // Sets default values
@@ -19,19 +21,26 @@ AGLDCharacterBase::AGLDCharacterBase(const FObjectInitializer& objInitor) :Super
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
-
+	//能力组件
 	AbilitySystemComp = CreateDefaultSubobject<UGLDAbilitySystemComponent>(TEXT("AbilitySystemComp"));
 	AbilitySystemComp->SetIsReplicated(true);
 	AbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
+	//连击组件
 	ComboComp = CreateDefaultSubobject<UGLDComboComponent>(TEXT("ComboComp"));
 	ComboComp->SetIsReplicated(false);
 	AttributeSet = CreateDefaultSubobject<UGLDAttributeSetCharacter>(TEXT("CharacterAttributeSet"));
-
+	//生命组件
 	HealthComp = CreateDefaultSubobject<UGLDHealthComponent>(TEXT("CharacterHealthComponent"));
 	HealthComp->SetIsReplicated(true);
 	HealthComp->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
 	HealthComp->OnDeathFinished.AddDynamic(this, &ThisClass::OnDeathFinished);
+	//仓库组件
+	InventoryComp = CreateDefaultSubobject<UGLDInventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComp->SetIsReplicated(true);
+
+	//装备组件
+	EquipmentComp = CreateDefaultSubobject<UGLDEquipmentComponent>(TEXT("EquipmentComponent"));
+	EquipmentComp->SetIsReplicated(true);
 
 	SetNetUpdateFrequency(100.f);
 }
@@ -148,6 +157,63 @@ void AGLDCharacterBase::ClientRPCFunction_Implementation(FGameplayTagContainer O
 {   //广播能力冷却
 	AbilityCoolDownDelegate.Broadcast(OutAbilityTag, CooldownTime);
 }
+void AGLDCharacterBase::ActiveSkillByInventoryId_Implementation(int32 InInventoryID)
+{
+	if (InventoryComp)
+	{
+		InventoryComp->ActiveSkillByInventoryId(InInventoryID);
+	}
+}
+void AGLDCharacterBase::CallServerDownLoadInfo_Implementation()
+{
+	if (InventoryComp)
+	{
+		InventoryComp->CallServerDownLoadInfo();
+	}
+	if (EquipmentComp)
+	{
+		EquipmentComp->CallServerDownLoadInfo();
+	}
+}
+void AGLDCharacterBase::SwapInventoryItem_Implementation(int32 Index_i, int32 Index_j)
+{
+	if (InventoryComp)
+	{
+		InventoryComp->SwapInventoryItem(Index_i, Index_j);
+	}
+}
+
+void AGLDCharacterBase::SwapEquipmentItem_Implementation(int32 Index_i, int32 Index_j)
+{
+	if (EquipmentComp)
+	{
+		EquipmentComp->SwapEquipmentItem(Index_i, Index_j);
+	}
+}
+
+void AGLDCharacterBase::UndockEquipmentByID_Implementation(int32 InUndockEquipmentID)
+{
+	if (EquipmentComp)
+	{
+		EquipmentComp->UndockEquipmentByID(InUndockEquipmentID);
+	}
+}
+
+void AGLDCharacterBase::SwapFromInvToEqu_Implementation(int32 InInventory_Index, int32 InEquipment_Index)
+{
+	if (EquipmentComp)
+	{
+		EquipmentComp->SwapFromInvToEqu(InInventory_Index, InEquipment_Index);
+	}
+}
+
+void AGLDCharacterBase::SwapFromEquToInv_Implementation(int32 InEquipment_Index, int32 InInventory_Index)
+{
+	if (EquipmentComp)
+	{
+		EquipmentComp->SwapFromEquToInv(InEquipment_Index, InInventory_Index);
+	}
+}
 
 UGLDAbilitySystemComponent* AGLDCharacterBase::GetGLDAbilitySystemComponent() const
 {
@@ -177,6 +243,16 @@ UGLDComboComponent* AGLDCharacterBase::GetGLDComboComponent() const
 UGLDHealthComponent* AGLDCharacterBase::GetGLDHealthComponent() const
 {
 	return HealthComp;
+}
+
+UGLDInventoryComponent* AGLDCharacterBase::GetGLDInventoryComponent() const
+{
+	return InventoryComp;
+}
+
+UGLDEquipmentComponent* AGLDCharacterBase::GetGLDEquipmentComponent() const
+{
+	return EquipmentComp;
 }
 
 void AGLDCharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

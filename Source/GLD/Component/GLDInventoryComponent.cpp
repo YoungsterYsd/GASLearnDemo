@@ -16,11 +16,6 @@ FGLDInventoryItem::FGLDInventoryItem()
 	: RPGItem(nullptr)
 	, ItemCount(0)
 {
-
-
-
-
-
 }
 
 bool FGLDInventoryItem::IsValid() const
@@ -28,7 +23,6 @@ bool FGLDInventoryItem::IsValid() const
 	if (RPGItem && ItemCount > 0)
 	{
 		return true;
-
 	}
 	return false;
 }
@@ -37,22 +31,16 @@ void FGLDInventoryItem::ResetSelf()
 {
 	RPGItem = nullptr;
 	ItemCount = 0;
-
-
 }
 
 UGLDInventoryComponent::UGLDInventoryComponent(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
 	InventoryItems.AddDefaulted(30);
-
 	SetIsReplicatedByDefault(true);
-
 }
 
 void UGLDInventoryComponent::OnRep_InventoryItems()
@@ -63,7 +51,6 @@ void UGLDInventoryComponent::OnRep_InventoryItems()
 void UGLDInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void UGLDInventoryComponent::ActiveSkillByInventoryId(int32 InInventoryId)
@@ -73,13 +60,9 @@ void UGLDInventoryComponent::ActiveSkillByInventoryId(int32 InInventoryId)
 		if (UGLDPotion* InPotion = Cast<UGLDPotion>(InventoryItems[InInventoryId].RPGItem))
 		{
 			UAbilitySystemComponent* AbilitySystemComponent = Cast<AGLDCharacterBase>(GetOwner())->GetAbilitySystemComponent();
-
 			UGLDGameplayAbility* InGA = Cast<UGLDGameplayAbility>(InPotion->GrantedAbility->GetDefaultObject());
-
 			FGameplayAbilitySpecHandle  Handle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(InGA));
-
 			AbilitySystemComponent->TryActivateAbility(Handle);
-
 			//自动移除handle
 			AbilitySystemComponent->SetRemoveAbilityOnEnd(Handle);
 
@@ -88,12 +71,9 @@ void UGLDInventoryComponent::ActiveSkillByInventoryId(int32 InInventoryId)
 		{
 			UGLDEquipmentComponent* EquipmentComponent = 
 			Cast<UGLDEquipmentComponent>(GetOwner()->FindComponentByClass(UGLDEquipmentComponent::StaticClass()));
-
-
 			//通知服务器装备装备
 			FGLDEquipmentItem InEquipmentItem;
 			InEquipmentItem.RPGEquimentItemPointer = InEquipment;
-
 			//通知装备组件装备一个装备
 			if (EquipmentComponent)
 			{
@@ -101,12 +81,8 @@ void UGLDInventoryComponent::ActiveSkillByInventoryId(int32 InInventoryId)
 				if (bAddEquipment)
 				{
 					RemoveInventoryItem(InInventoryId);
-
 				}
-
 			}
-
-
 		}
 	}
 }
@@ -126,12 +102,10 @@ bool UGLDInventoryComponent::AddInventoryItem(FGLDInventoryItem NewItem)
 	//只在服务器操作数据
 	if (HasAuthority())
 	{
-
 		if (!NewItem.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("AddInventoryItem: Failed trying to add null item!"));
 			return false;
-
 		}
 
 		//找一找 原先的仓库有没有
@@ -142,16 +116,14 @@ bool UGLDInventoryComponent::AddInventoryItem(FGLDInventoryItem NewItem)
 			{
 				if (NewItem.RPGItem->MaxCount > 1)
 				{
-
 					InventoryItems[i].ItemCount += NewItem.ItemCount;
 					bFind = true;
 					return true;
 				}
 			}
-
 		}
 
-		//去找一下有米有空的位置
+		//去找一下空的位置
 		for (size_t i = 0; i < InventoryItems.Num(); i++)
 		{
 			if (!InventoryItems[i].IsValid())
@@ -160,8 +132,6 @@ bool UGLDInventoryComponent::AddInventoryItem(FGLDInventoryItem NewItem)
 				return true;
 			}
 		}
-
-
 	}
 	//	仓库满了
 	return false;
@@ -177,9 +147,6 @@ bool UGLDInventoryComponent::HasThisInventoryItem(FGLDInventoryItem NewItem)
 			return true;
 		}
 	}
-
-
-
 	return false;
 }
 
@@ -188,10 +155,8 @@ bool UGLDInventoryComponent::ReplaceInventoryItem(FGLDInventoryItem NewItem, int
 	if (HasAuthority())
 	{
 		InventoryItems[InReplace_ID] = NewItem;
-
 		return true;
 	}
-
 	return false;
 }
 
@@ -199,10 +164,7 @@ void UGLDInventoryComponent::RemoveInventoryItem(int32 Index_Remove)
 {
 	if (HasAuthority())
 	{
-
 		InventoryItems[Index_Remove].ResetSelf();
-
-
 	}
 }
 
@@ -217,14 +179,12 @@ void UGLDInventoryComponent::RemoveInventoryItemNyItem(FGLDInventoryItem NewItem
 			{
 				//减去目标数量
 				InventoryItems[i].ItemCount -= NewItem.ItemCount;
-
 				if (InventoryItems[i].ItemCount < 0)
 				{
 					InventoryItems[i].ResetSelf();
 				}
 				break;
 			}
-
 		}
 	}
 }
@@ -239,24 +199,16 @@ void UGLDInventoryComponent::SwapInventoryItem(int32 Index_i, int32 Index_j)
 
 UGLDItem* UGLDInventoryComponent::GetInventoryItemByID(int32 i)
 {
-
 	if (!InventoryItems[i].IsValid())
 	{
-
 		return nullptr;
 	}
-
-
-
 	return InventoryItems[i].RPGItem;
-
 }
 
 FGLDInventoryItem UGLDInventoryComponent::GetInventoryItemInfoByID(int32 i)
 {
-
 	return InventoryItems[i];
-
 }
 
 void UGLDInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

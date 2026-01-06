@@ -54,7 +54,7 @@ bool UUI_GameMain::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEven
 	//拖拽完成了
 	if (InOperation)
 	{
-		if (AXGRPGCharacterBase* InCharacter = UI_GetXGRPGCharacterBase())
+		if (AGLDCharacterBase* InCharacter = UI_GetGLDCharacterBase())
 		{
 			if (UUI_InventorySlot* MyInventorySlot = Cast<UUI_InventorySlot>(InOperation->Payload))
 			{

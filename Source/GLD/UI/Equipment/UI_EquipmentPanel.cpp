@@ -19,23 +19,15 @@ void UUI_EquipmentPanel::NativeConstruct()
 		//初始化6个
 		for (size_t i = 0; i < 6; i++)
 		{
-
 			if (UUI_EquipmentSlot* SlotWidget = CreateWidget<UUI_EquipmentSlot>(GetWorld(), SlotClass))
 			{
 				SlotWidget->EquipmentId = i;
 				if (UWrapBoxSlot* InWrapSlot = EquipmentArray->AddChildToWrapBox(SlotWidget))
 				{
-
-
-
 				}
 			}
-
 		}
 	}
-
-
-
 	//绑定
 	//去角色里面绑定好信息
 	if (AGLDCharacterBase* InCharacter = UI_GetGLDCharacterBase())
@@ -44,10 +36,6 @@ void UUI_EquipmentPanel::NativeConstruct()
 	
 		InCharacter->CallServerDownLoadInfo();
 	}
-
-
-
-
 }
 
 void UUI_EquipmentPanel::NativeDestruct()
@@ -57,7 +45,6 @@ void UUI_EquipmentPanel::NativeDestruct()
 	if (AGLDCharacterBase* InCharacter = UI_GetGLDCharacterBase())
 	{
 		InCharacter->GetGLDEquipmentComponent()->OnEquipmentItemChanged.Unbind();
-
 	}
 }
 
@@ -73,7 +60,6 @@ void UUI_EquipmentPanel::OnEquipmentItemChanged(const TArray<FGLDEquipmentItem>&
 				//如果数组里面有数据就去更新它
 				if (InEquipmentItems[i].IsValid())
 				{
-
 					InSlot->SlotIcon->SetBrushFromTexture(InEquipmentItems[i].RPGEquimentItemPointer->ItemIcon);
 					InSlot->SlotIcon->SetVisibility(ESlateVisibility::Visible);
 				}
@@ -83,19 +69,9 @@ void UUI_EquipmentPanel::OnEquipmentItemChanged(const TArray<FGLDEquipmentItem>&
 					//清空图片的对象
 					InSlot->SlotIcon->SetVisibility(ESlateVisibility::Hidden);
 					InSlot->SlotIcon->SetBrushResourceObject(NULL);
-
 				}
-
-
 			}
-
-
-
-
-
 		}
 	}
-
-
 }
 

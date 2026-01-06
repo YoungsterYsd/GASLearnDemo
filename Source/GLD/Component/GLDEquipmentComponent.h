@@ -2,9 +2,8 @@
 
 
 #include "CoreMinimal.h"
-
 #include "GLDItem.h"
-#include "GLDComponentBase.h"
+#include "GLDActorComponentBase.h"
 
 #include  "GameplayEffectTypes.h"
 
@@ -33,14 +32,14 @@ public:
 	bool IsValid() const;
 
 	void ResetSelf();
-
 };
 
+//装备变化时通知UI
 DECLARE_DELEGATE_OneParam(FOnEquipmentItemChangedNative, const TArray<FGLDEquipmentItem>&);
 
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class GLD_API UGLDEquipmentComponent : public UGLDComponentBase
+class GLD_API UGLDEquipmentComponent : public UGLDActorComponentBase
 {
 	GENERATED_BODY()
 
@@ -53,15 +52,11 @@ public:
 
 	UFUNCTION()
 	void OnRep_EquipmentItems();
-
-
 	void CallServerDownLoadInfo();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-
 public:
 
 	// Called every frame

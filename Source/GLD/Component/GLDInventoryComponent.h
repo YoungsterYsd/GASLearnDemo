@@ -4,7 +4,7 @@
 #include "GLDItem.h"
 
 #include "Components/GameFrameworkComponent.h"
-#include "GLDComponentBase.h"
+#include "GLDActorComponentBase.h"
 
 #include "GLDInventoryComponent.generated.h"
 
@@ -36,12 +36,12 @@ public:
 	void ResetSelf();
 
 };
-
+//仓库内容发生变动时，发动广播
 DECLARE_DELEGATE_OneParam(FOnInventoryItemChangedNative, const TArray<FGLDInventoryItem>&);
 
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class GLD_API UGLDInventoryComponent : public UGLDComponentBase
+class GLD_API UGLDInventoryComponent : public UGLDActorComponentBase
 {
 	GENERATED_BODY()
 
@@ -64,15 +64,12 @@ protected:
 public:
 
 	void ActiveSkillByInventoryId(int32  InInventoryId);
-
 	void CallServerDownLoadInfo();
-
 	//仅供内部使用
 	//通知UI刷新界面
 	//为什么会有参数 因为是RPC需要同步,如果在方法体内执行内,拖取的数据是客户端的
 	UFUNCTION(Client, Reliable)
 	void InventoryItemChanged(const TArray<FGLDInventoryItem>& InInventoryItems);
-
 
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	bool AddInventoryItem(FGLDInventoryItem NewItem);
@@ -100,18 +97,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Inventory)
 	FGLDInventoryItem GetInventoryItemInfoByID(int32 i);
 
-
-
-
-
 protected:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_InventoryItems, Category = Inventory)
 	TArray<FGLDInventoryItem> InventoryItems;
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-
-
 };
 

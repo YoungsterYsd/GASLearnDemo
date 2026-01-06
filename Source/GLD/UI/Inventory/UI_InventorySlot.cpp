@@ -20,18 +20,16 @@
 UUI_InventorySlot::UUI_InventorySlot(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-
 	SlotType = ESlotType::SlotType_InventorySlot;
 }
 
 FReply UUI_InventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-
+	//确定鼠标点击，检测拖拽
 	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton || InMouseEvent.IsTouchEvent())
 	{
 		FReply Reply = FReply::Handled();
-
 		TSharedPtr<SWidget> SlateWidgetDrag = GetCachedWidget();
 
 		if (SlateWidgetDrag.IsValid())
@@ -39,48 +37,33 @@ FReply UUI_InventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, c
 			Reply.DetectDrag(SlateWidgetDrag.ToSharedRef(), EKeys::RightMouseButton);
 			return Reply;
 		}
-
-
-
 	}
-
-
 	return FReply::Handled();
 }
 
 void UUI_InventorySlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	if (ICODragDrogClass && SlotIcon && SlotIcon->Brush.GetResourceObject())
+	if (ICODragDrogClass && SlotIcon &&SlotIcon->GetBrush().GetResourceObject())
 	{
-
 		if (UUI_ICONDragDrog* ICODragDrog = CreateWidget<UUI_ICONDragDrog>(GetWorld(), ICODragDrogClass))
 		{
-
 			//可以自定义的
 			if (UDragDropOperation* InDropOperation = NewObject<UDragDropOperation>(GetTransientPackage(), UDragDropOperation::StaticClass()))
 			{
-
 				//给一个强应用 避免GC
 				//InDropOperation->SetFlags(RF_StrongRefOnFrame);
-
 				//图片赋值
-				ICODragDrog->DrawICON(Cast<UTexture2D>(SlotIcon->Brush.GetResourceObject()));
-
-
+				ICODragDrog->DrawICON(Cast<UTexture2D>(SlotIcon->GetBrush().GetResourceObject()));
 				//定位 UE帮我们写好了 定位鼠标的位置进行渲染
 				InDropOperation->DefaultDragVisual = ICODragDrog;
-
 				//传入我们的负载信息，告知我们从哪里拖过来的，从哪里的
 				InDropOperation->Payload = this;
 				OutOperation = InDropOperation;
 				HideInventoryNum();
 				HideSlotIcon();
 			}
-
 		}
 	}
-
-
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 }
 
@@ -98,9 +81,7 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 			//判断负载里面的类型
 			if (UUI_SlotBase* InSlotBae = Cast<UUI_SlotBase>(InOperation->Payload))
 			{
-
 				ESlotType InSlotType = InSlotBae->GetSlotType();
-
 				switch (InSlotType)
 				{
 				case ESlotType::SlotType_None:
@@ -112,10 +93,8 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 					if (UUI_InventorySlot* MyInventorySlot = Cast<UUI_InventorySlot>(InOperation->Payload))
 					{
 						//调用我们的角色在服务器上进行仓库内容交换
-
 						InCharacter->SwapInventoryItem(MyInventorySlot->InventoryId, InventoryId);
 						bDrop = true;
-
 					}
 
 					break;
@@ -127,17 +106,14 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 					{
 						//A1 先客户端处理本地逻辑
 						//注意这里是判定自己的物品类型 而不是负载的物品类型
-
 						//A2 如果我们自己是一个装备,我们就呼叫服务器执行装备交换								
 						//如果是空的呢?我们也要呼叫交换	 	
 
 						if (Cast<UGLDEquipment>(InCharacter->GetGLDInventoryComponent()->GetInventoryItemByID(InventoryId))
 							|| !InCharacter->GetGLDInventoryComponent()->GetInventoryItemInfoByID(InventoryId).IsValid())
 						{
-
 							InCharacter->SwapFromEquToInv(MyEquipmentSlot->EquipmentId, InventoryId);
 							bDrop = true;
-
 						}
 						else
 						{
@@ -145,19 +121,11 @@ bool UUI_InventorySlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDro
 							InSlotBae->ShowSlotIcon();
 							bDrop = true;
 						}
-
-
-
-
-
 					}
-
 					break;
 				default:
 					break;
 				}
-
-
 			}
 		}
 	}
@@ -172,7 +140,6 @@ void UUI_InventorySlot::HideInventoryNum()
 void UUI_InventorySlot::ShowInventoryNum()
 {
 	Num->SetVisibility(ESlateVisibility::HitTestInvisible);
-
 }
 
 void UUI_InventorySlot::OnClickedWidget()
@@ -181,6 +148,4 @@ void UUI_InventorySlot::OnClickedWidget()
 	{
 		InCharacter->ActiveSkillByInventoryId(InventoryId);
 	}
-
-
 }

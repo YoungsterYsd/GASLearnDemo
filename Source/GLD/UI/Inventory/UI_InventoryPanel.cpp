@@ -12,20 +12,13 @@
 void UUI_InventoryPanel::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-
-
 	//去角色里面绑定好信息
 	if (AGLDCharacterBase* InCharacter = UI_GetGLDCharacterBase())
 	{
 		InCharacter->GetGLDInventoryComponent()->OnInventoryItemChanged.BindUObject(this, &UUI_InventoryPanel::OnInventoryItemChanged);
 		// 去做主动请求服务器更新的操作
-	
 		InCharacter->CallServerDownLoadInfo();
-
 	}
-
-
 }
 
 void UUI_InventoryPanel::NativeDestruct()
@@ -47,7 +40,6 @@ void UUI_InventoryPanel::OnInventoryItemChanged(const TArray<FGLDInventoryItem>&
 	//第一次更新创建元素
 	if (InventoryArray->GetChildrenCount() == 0)
 	{
-
 		//30个插槽，5行，每行六个
 		for (size_t i = 0; i < 5; i++)
 		{
@@ -59,13 +51,9 @@ void UUI_InventoryPanel::OnInventoryItemChanged(const TArray<FGLDInventoryItem>&
 					SlotWidget->InventoryId = i * 6 + j;
 					if (UUniformGridSlot* GridSlot = InventoryArray->AddChildToUniformGrid(SlotWidget, i, j))
 					{
-
-
-
 					}
 				}
 			}
-
 		}
 	}
 
@@ -76,39 +64,25 @@ void UUI_InventoryPanel::OnInventoryItemChanged(const TArray<FGLDInventoryItem>&
 		{
 			for (size_t j = 0; j < 6; j++)
 			{
-
 				if (UUI_InventorySlot* InSlot = Cast<UUI_InventorySlot>(InventoryArray->GetChildAt(i * 6 + j)))
 				{
-
 					//如果数组里面有数据就去更新它
 					if (InInventoryItems[i * 6 + j].IsValid())
 					{
 						InSlot->Num->SetText(FText::FromString(FString::FromInt(InInventoryItems[i * 6 + j].ItemCount)));
 						InSlot->Num->SetVisibility(ESlateVisibility::Visible);
-
-
 						InSlot->SlotIcon->SetBrushFromTexture(InInventoryItems[i * 6 + j].RPGItem->ItemIcon);
 						InSlot->SlotIcon->SetVisibility(ESlateVisibility::Visible);
 					}
 					else
 					{
 						//没有数据就隐藏
-
 						InSlot->Num->SetVisibility(ESlateVisibility::Hidden);
 						InSlot->SlotIcon->SetVisibility(ESlateVisibility::Hidden);
 						InSlot->SlotIcon->SetBrushResourceObject(NULL);
-
 					}
-
-
-
 				}
 			}
-
-
 		}
 	}
-
-
-
 }
